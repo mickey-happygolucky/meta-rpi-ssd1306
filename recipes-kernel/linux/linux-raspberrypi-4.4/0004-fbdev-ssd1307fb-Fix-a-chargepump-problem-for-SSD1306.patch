@@ -1,0 +1,39 @@
+From 7b31ab700825c22d1ec90a01bcce58041bfec28a Mon Sep 17 00:00:00 2001
+From: Yusuke Mitsuki <mickey.happygolucky@gmail.com>
+Date: Thu, 6 Oct 2016 22:36:07 +0900
+Subject: [PATCH 4/6] fbdev: ssd1307fb: Fix a chargepump problem for SSD1306
+
+---
+ drivers/video/fbdev/ssd1307fb.c | 15 ++++++++-------
+ 1 file changed, 8 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/video/fbdev/ssd1307fb.c b/drivers/video/fbdev/ssd1307fb.c
+index 0f030e5..8b288b6 100644
+--- a/drivers/video/fbdev/ssd1307fb.c
++++ b/drivers/video/fbdev/ssd1307fb.c
+@@ -384,14 +384,15 @@ static int ssd1307fb_init(struct ssd1307fb_par *par)
+ 		return ret;
+ 
+ 	/* Turn on the DC-DC Charge Pump */
+-	ret = ssd1307fb_write_cmd(par->client, SSD1307FB_CHARGE_PUMP);
+-	if (ret < 0)
+-		return ret;
++	if (par->device_info->need_chargepump) {
++		ret = ssd1307fb_write_cmd(par->client, SSD1307FB_CHARGE_PUMP);
++		if (ret < 0)
++			return ret;
+ 
+-	ret = ssd1307fb_write_cmd(par->client,
+-		(par->device_info->need_chargepump & 0x1 << 2) & 0x14);
+-	if (ret < 0)
+-		return ret;
++		ret = ssd1307fb_write_cmd(par->client, 0x14);
++		if (ret < 0)
++			return ret;
++	}
+ 
+ 	/* Switch to horizontal addressing mode */
+ 	ret = ssd1307fb_write_cmd(par->client, SSD1307FB_SET_ADDRESS_MODE);
+-- 
+2.1.4
+

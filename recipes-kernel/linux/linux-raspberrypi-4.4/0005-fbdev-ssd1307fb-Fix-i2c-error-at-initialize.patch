@@ -1,0 +1,27 @@
+From c7b0f7b05eda3f8f46a1857b277cfc79d18aafa2 Mon Sep 17 00:00:00 2001
+From: Yusuke Mitsuki <mickey.happygolucky@gmail.com>
+Date: Thu, 6 Oct 2016 22:40:08 +0900
+Subject: [PATCH 5/6] fbdev: ssd1307fb: Fix i2c error at initialize
+
+---
+ drivers/video/fbdev/ssd1307fb.c | 4 ----
+ 1 file changed, 4 deletions(-)
+
+diff --git a/drivers/video/fbdev/ssd1307fb.c b/drivers/video/fbdev/ssd1307fb.c
+index 8b288b6..b17ad1c 100644
+--- a/drivers/video/fbdev/ssd1307fb.c
++++ b/drivers/video/fbdev/ssd1307fb.c
+@@ -431,10 +431,6 @@ static int ssd1307fb_init(struct ssd1307fb_par *par)
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	/* Clear the screen if we could not give reset at probe time */
+-	if (!par->reset)
+-		ssd1307fb_update_display(par);
+-
+ 	/* Turn on the display */
+ 	ret = ssd1307fb_write_cmd(par->client, SSD1307FB_DISPLAY_ON);
+ 	if (ret < 0)
+-- 
+2.1.4
+
